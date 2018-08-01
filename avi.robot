@@ -120,15 +120,6 @@ Login
     Натиснути    id=login-btn
     Sleep    1
 
-Змінити користувача
-    [Arguments]    @{ARGUMENTS}
-    Go to    ${USERS.users['${ARGUMENTS[0]}'].homepage}
-    Sleep    1
-    Input text    id=login-form-login    ${USERS.users['${ARGUMENTS[0]}'].login}
-    Input text    id = login-form-password    ${USERS.users['${ARGUMENTS[0]}'].password}
-    Натиснути    id=login-btn
-    Sleep    1
-
 Створити тендер
     [Arguments]    @{ARGUMENTS}
     [Documentation]    ${ARGUMENTS[0]} == username
