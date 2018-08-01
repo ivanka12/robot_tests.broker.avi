@@ -575,7 +575,7 @@ Login
     ${index}=    inc    ${index}
     Wait Until Page Contains Element    id = questions[${index}].date
     ${return_value}=    Get text    id = questions[${index}].date
-    ${return_value}=    convert_date_time_to_iso    ${return_value}
+    ${return_value}=    convert_date_to_iso    ${return_value}
     [Return]    ${return_value}
 
 Отримати інформацію про awards[${index}].status
@@ -591,13 +591,9 @@ Login
     Input Text    id=questions-answer    ${answer_data.data.answer}
     Натиснути    id=create-question-btn
 
-Перейти до сторінки запитань
-    [Arguments]    ${username}    ${tender_uaid}
-    avi.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
-
 Отримати інформацію із запитання
     [Arguments]    ${username}    ${tender_uaid}    ${question_id}    ${field_name}
-    avi.Перейти до сторінки запитань    ${username}    ${tender_uaid}
+    avi.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     Sleep    1
     ${return_value}=    Run Keyword If    '${field_name}' == 'title'    Отримати інформацію про questions[${index}].title
     ...    ELSE IF    '${field_name}' == 'answer'    Отримати інформацію про questions[${index}].answer

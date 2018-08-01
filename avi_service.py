@@ -15,9 +15,6 @@ def is_checked(locator):
    driver = get_webdriver()
    return driver.find_element_by_id(locator).is_selected()
 
-def get_str(value):
-   return str(value)
-
 def get_budget(initial_tender_data):
    return str(initial_tender_data.data.value.amount)
 
@@ -52,23 +49,11 @@ def convert_date_to_iso(v_date):
    localized_date = time_zone.localize(date_obj)
    return localized_date.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
 
-def convert_date_time_to_iso(v_date_time):
-   date_obj = datetime.strptime(v_date_time, "%d.%m.%Y %H:%M")
-   time_zone = pytz.timezone('Europe/Kiev')
-   localized_date = time_zone.localize(date_obj)
-   return localized_date.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
-
 def download_file(url, file_name, output_dir):
    urllib.urlretrieve(url, ('{}/{}'.format(output_dir, file_name)))
 
 def inc(value):
    return int(value) + 1
-
-def to_str(value):
-   return str(value)
-
-def to_int(value):
-   return int(value)
 
 def get_upload_file_path():
    return os.path.join(os.getcwd(), 'src', 'robot_tests.broker.avi', 'test.txt')
