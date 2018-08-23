@@ -120,6 +120,13 @@ Login
     Натиснути    id=login-btn
     Sleep    1
 
+Змінити користувача
+    [Arguments]    @{ARGUMENTS}
+    Go to    ${USERS.users['${ARGUMENTS[0]}'].homepage}
+    Input text    id=login-form-login    ${USERS.users['${ARGUMENTS[0]}'].login}
+    Input text    id = login-form-password    ${USERS.users['${ARGUMENTS[0]}'].password}
+    Натиснути    id=login-btn
+
 Створити тендер
     [Arguments]    @{ARGUMENTS}
     [Documentation]    ${ARGUMENTS[0]} == username
@@ -168,15 +175,12 @@ Login
     Input text    id = lots-requires    'test'
     Input text    id = lots-notes    'test'
     Натиснути    id=submit-auction-btn
-    Sleep    2
     ${items}=    Get From Dictionary    ${ARGUMENTS[1].data}    items
     ${Items_length}=    Get Length      ${items}
     :FOR   ${index}   IN RANGE   ${Items_length}
     \       Додати предмет    ${items[${index}]}          ${index}
-    Sleep    1
     Натиснути    id = submit-auction-btn
     Натиснути    id =publish-btn
-    Sleep    2
     ${tender_id}=    Get Text    id = auction-id
     ${TENDER}=    Get Text    id= auction-id
     log to console    ${TENDER}
@@ -185,7 +189,6 @@ Login
 Додати предмет
     [Arguments]    ${item}    ${index}
     Натиснути    id = create-item-btn
-    Sleep    2
     Input text    id=items-description    ${item.description}
     Input text    id=items-quantity    ${item.quantity}
     Select From List By Value    id=items-unit_code    ${item.unit.code}
@@ -218,8 +221,8 @@ Login
     Wait Until Page Contains Element    id = files-type    20
     Select From List By Value    id = files-type    technicalSpecifications
     Choose File    id = file-type-input    ${ARGUMENTS[1]}
-    Sleep    1
     Натиснути    id=lot-document-upload-btn
+    Sleep    3
     Reload Page
 
 Завантажити документ в тендер з типом
@@ -229,8 +232,8 @@ Login
     Wait Until Page Contains Element    id = files-type    20
     Select From List By Value    id = files-type    ${doc_type}
     Choose File    id = file-type-input    ${filepath}
-    Sleep    1
     Натиснути    id=lot-document-upload-btn
+    Sleep    3
 
 Завантажити ілюстрацію
     [Arguments]  ${username}  ${tender_uaid}  ${filepath}
@@ -239,8 +242,8 @@ Login
     Wait Until Page Contains Element    id = files-type    20
     Select From List By Value    id = files-type    illustration
     Choose File    id = file-type-input    ${filepath}
-    Sleep    1
     Натиснути    id=lot-document-upload-btn
+    Sleep    3
     Reload Page
 
 Додати Virtual Data Room
@@ -250,6 +253,7 @@ Login
     Wait Until Page Contains Element    id = lots-vdr    20
     Input Text    id = lots-vdr    ${vdr_url}
     Натиснути    id=submit-auction-btn
+    Sleep    3
     Reload Page
 
 Додати публічний паспорт активу
@@ -259,15 +263,17 @@ Login
     Wait Until Page Contains Element    id = lots-passport    20
     Input text    id = lots-passport    ${accessDetails}
     Натиснути    id=submit-auction-btn
+    Sleep    3
     Reload Page
 
 Додати офлайн документ
-  [Arguments]  ${username}  ${tender_uaid}  ${accessDetails}  ${title}=Familiarization with bank asset
-  avi.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
-  Click Element  id = lot-update-btn
-  Wait Until Element Is Visible  id = lots-address
-  Input Text  id = lots-address    ${accessDetails}
-  Натиснути    id = submit-auction-btn
+    [Arguments]  ${username}  ${tender_uaid}  ${accessDetails}  ${title}=Familiarization with bank asset
+    avi.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
+    Click Element  id = lot-update-btn
+    Wait Until Element Is Visible  id = lots-address
+    Input Text  id = lots-address    ${accessDetails}
+    Натиснути    id = submit-auction-btn
+    Sleep    3
 
 Пошук тендера по ідентифікатору
     [Arguments]    ${username}  ${tender_uaid}
@@ -275,7 +281,6 @@ Login
     Go to    ${USERS.users['${username}'].default_page}
     Wait Until Page Contains Element    id = auctionssearch-main_search
     Input Text    id = auctionssearch-main_search    ${tender_uaid}
-    Sleep    1
     Натиснути    id = public-search-btn
     Sleep    2
     Wait Until Page Contains Element    id=auction-view-btn
@@ -326,7 +331,6 @@ Login
 
 Отримати текст із поля і показати на сторінці
     [Arguments]    ${fieldname}
-    Sleep    1
     ${return_value}=    Get Text    ${locator.${fieldname}}
     [Return]    ${return_value}
 
@@ -370,7 +374,6 @@ Login
 Отримати інформацію про status
     Reload Page
     Wait Until Page Contains Element    id = auction-status
-    Sleep    1
     ${return_value}=    Get Text    id = auction-status
     [Return]    ${return_value}
 
@@ -396,7 +399,6 @@ Login
     Input Text    ${locator.edit.${field_name}}    ${field_value}
     Choose File    id = file-type-input    ${testFilePath}
     Натиснути    id=submit-auction-btn
-    Sleep    10
     Wait Until Page Contains Element    id = lots-name    15
 
 Отримати інформацію про items[${index}].quantity
@@ -527,7 +529,6 @@ Login
     avi.Пошук тендера по ідентифікатору    ${ARGUMENTS[0]}    ${ARGUMENTS[1]}
     Wait Until Page Contains Element    id= create-question-btn
     Натиснути    id=create-question-btn
-    Sleep    1
     Input text    id=question-title    ${title}
     Input text    id=question-description    ${description}
     Натиснути    id= submit-question-btn
@@ -566,7 +567,7 @@ Login
     ${index}=    inc    ${index}
     Wait Until Page Contains Element    id = questions[${index}].date
     ${return_value}=    Get text    id = questions[${index}].date
-    ${return_value}=    convert_date_to_iso    ${return_value}
+    ${return_value}=    convert_date_time_to_iso    ${return_value}
     [Return]    ${return_value}
 
 Отримати інформацію про awards[${index}].status
@@ -576,16 +577,17 @@ Login
 Відповісти на запитання
     [Arguments]  ${username}  ${tender_uaid}  ${answer_data}  ${question_id}
     avi.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
-    Sleep    2
     Натиснути    id = question[${question_id}].answer
-    Sleep    3
     Input Text    id=questions-answer    ${answer_data.data.answer}
     Натиснути    id=create-question-btn
 
+Перейти до сторінки запитань
+    [Arguments]    ${username}    ${tender_uaid}
+    avi.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+
 Отримати інформацію із запитання
     [Arguments]    ${username}    ${tender_uaid}    ${question_id}    ${field_name}
-    avi.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
-    Sleep    1
+    avi.Перейти до сторінки запитань    ${username}    ${tender_uaid}
     ${return_value}=    Run Keyword If    '${field_name}' == 'title'    Отримати інформацію про questions[${index}].title
     ...    ELSE IF    '${field_name}' == 'answer'    Отримати інформацію про questions[${index}].answer
     ...    ELSE    Отримати інформацію про questions[${index}].description
@@ -595,22 +597,18 @@ Login
     [Arguments]  ${username}  ${tender_uaid}  ${bid}
     avi.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     ${amount}=    bid_value    ${bid}
-    sleep    2
     Натиснути    id = bid-create-btn
-    Sleep    2s
     Run Keyword If    ${bid['data'].qualified} != ${False}    Натиснути    id=bids-oferta
     Run Keyword If    '${amount}' != ''   Input Text    id=bids-value_amount    ${amount}
-    Sleep    2
     Натиснути    id = bid-save-btn
     Натиснути    id = bid-activate-btn
-    sleep    10
+    Sleep    3
     Reload Page
 
 Скасувати цінову пропозицію
     [Arguments]    @{ARGUMENTS}
     [Documentation]    ${ARGUMENTS[0]} == username
     ...    ${ARGUMENTS[1]} == tenderId
-    Sleep    3
     Натиснути    id=bid-delete-btn
 
 Отримати інформацію із пропозиції
@@ -625,29 +623,23 @@ Login
 Змінити цінову пропозицію
     [Arguments]  ${username}  ${tender_uaid}  ${amount}  ${amount_value}
     avi.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
-    sleep    2
     Натиснути    id = bid-create-btn
-    Sleep    2s
     Натиснути    id = bid-update-btn
-    Sleep    2
     Натиснути    id = bids-oferta
     ${value}=    Convert To String    ${amount_value}
     Input Text    id=bids-value_amount    ${value}
-    Sleep    2
     Натиснути    id = bid-save-btn
-    sleep    10
+    Sleep    3
     Reload Page
 
 Завантажити фінансову ліцензію
     [Arguments]  ${username}    ${tender_uaid}    ${path}
     avi.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
-    Sleep    1s
     Натиснути    id = bid-create-btn
-    Sleep    2s
     Select From List By Value    id = files-type    financialLicense
     Choose File    id = files-file    ${path}
     Натиснути    id = document-upload-btn
-    Sleep    5
+    Sleep    3
     Reload Page
 
 Змінити документ в ставці
@@ -661,8 +653,8 @@ Login
     Натиснути    id = bids[${ARGUMENTS[2]}].link
     Select From List By Value    id = files-type    commercialProposal
     Choose File       id = files-file    ${ARGUMENTS[1]}
-    Sleep   2
     Натиснути     id=document-upload-btn
+    Sleep    3
     Reload Page
 
 Завантажити документ в ставку
@@ -674,8 +666,8 @@ Login
     Натиснути    id = bids[${ARGUMENTS[2]}].link
     Select From List By Value    id = files-type    commercialProposal
     Choose File       id = files-file    ${ARGUMENTS[1]}
-    Sleep   2
     Натиснути     id=document-upload-btn
+    Sleep    3
     Reload Page
 
 Отримати посилання на аукціон для глядача
@@ -699,14 +691,12 @@ Login
 Отримати інформацію із документа по індексу
     [Arguments]    ${username}    ${tender_uaid}    ${document_index}    ${field}
     avi.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
-    Sleep    5
     ${doc_value}    Get Text    name = ${document_index}.${field}
     [Return]    ${doc_value}
 
 Отримати інформацію із документа
     [Arguments]    ${username}    ${tender_uaid}    ${doc_id}    ${field}
     avi.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
-    Sleep    5
     ${doc_value}    Get Text    xpath=(//a[contains(@name,'${field}.${doc_id}')])
     [Return]    ${doc_value}
 
@@ -725,7 +715,6 @@ Login
 Отримати документ
     [Arguments]    ${username}    ${tender_uaid}    ${doc_id}
     avi.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
-    sleep    1
     ${file_name}    Get Text    xpath=//*[contains(text(),'${doc_id}')]
     ${url}    Get Element Attribute    xpath=//*[contains(text(),'${doc_id}')]@href
     download_file    ${url}    ${file_name.split('/')[-1]}    ${OUTPUT_DIR}
@@ -739,12 +728,9 @@ Login
 
 Скасування рішення кваліфікаційної комісії
     [Arguments]    ${username}    ${tender_uaid}    ${award_num}
-    Sleep    20
     avi.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
-    Wait Until Page Contains Element    id = bids[${award_num}].link
-    Натиснути    id = bids[${award_num}].link
-    Sleep    2
-    Натиснути    id = cancel-bid-btn
+    Натиснути    id=bids[1].link
+    Натиснути    id=cancel-bid-btn
 
 Скасувати закупівлю
     [Arguments]  @{ARGUMENTS}
@@ -755,84 +741,65 @@ Login
     ...      ${ARGUMENTS[3]} = doc_path
     ...      ${ARGUMENTS[4]} = description
     Натиснути    id = cabinet
-    Sleep   2
     Input Text    name = LotSearch[auctionID]    ${ARGUMENTS[1]}
     Натиснути    name = LotSearch[name]
     Натиснути    id = view-btn
-    Sleep    1
     Натиснути    id = cancel-auction-btn
-    Sleep    1
     Select From List By Value    id = cancellations-reason    ${ARGUMENTS[2]}
     Натиснути    id = create-cancellation-btn
-    Sleep    1
     Натиснути    id = add-cancellation-document
-    Sleep    1
     Choose File    id = files-file    ${ARGUMENTS[3]}
-    Sleep    1
     Input Text    id = cancellations-description    ${ARGUMENTS[4]}
     Натиснути    id = upload-document
-    Sleep    1
     Натиснути    id = confirm-cancellation-btn
 
 Завантажити документ рішення кваліфікаційної комісії
     [Arguments]    ${username}    ${filepath}    ${tender_uaid}    ${award_num}
     avi.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
-    Wait Until Page Contains Element    id = bids[${award_num}].link
-    Натиснути    id = bids[${award_num}].link
+    Натиснути    id = bids[0].link
     Натиснути    id = disqualify-link
     Choose File    id = files-file    ${filepath}
-    Sleep    1
     Натиснути    id=upload-disqualification-btn
-    Sleep 2
+    Sleep    3
 
 Завантажити протокол аукціону
     [Arguments]    ${username}    ${tender_uaid}    ${filepath}    ${award_index}
     ${testFilePath}=    get_upload_file_path
     avi.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
-    Wait Until Page Contains Element    id = bids[${award_index}].link
-    Натиснути    id = bids[${award_index}].link
-    Sleep    1
-    Wait Until Page Contains Element    id = upload-protocol-btn
+    Натиснути    id = bids[0].link
     Натиснути    id = upload-protocol-btn
     Choose File    id = files-file    ${testFilePath}
-    Sleep    1
     Натиснути    id=bid-upload-protocol
+    Sleep    3
 
 Підтвердити постачальника
     [Arguments]  ${username}  ${tender_uaid}  ${award_num}
     avi.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
-    Wait Until Page Contains Element      id = bids[${award_num}].link
-    Натиснути    id = bids[${award_num}].link
-    Wait Until Page Contains Element      id = confirm-payment-btn
+    Натиснути    id = bids[0].link
     Натиснути    id = confirm-payment-btn
-    Sleep    1
 
 Завантажити угоду до тендера
     [Arguments]    ${username}    ${tender_uaid}    ${contract_num}    ${filepath}
     avi.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
-    Wait Until Page Contains Element    xpath=(//a[contains(@name, 'winner')])
-    Натиснути    xpath=(//a[contains(@name, 'winner')])
+    Натиснути    id = bids[0].link
     Wait Until Page Contains Element    id = upload-contract-link
     Натиснути    id = upload-contract-link
     Choose File    id = files-file    ${filepath}
-    Sleep    1
     Натиснути    id = upload-contract-btn
-    Sleep    10
+    Sleep    3
 
 Підтвердити наявність протоколу аукціону
     [Arguments]  ${username}  ${tender_uaid}  ${award_index}
     avi.Пошук тендера по ідентифікатору    ${username}  ${tender_uaid}
-    Wait Until Page Contains Element    id=bids[${award_index}].link
-    Натиснути    id=bids[${award_index}].link
-    Wait Until Page Contains Element    id = confirm-payment-btn
+    Натиснути    id=bids[0].link
+    Натиснути    id = confirm-payment-btn
+    Sleep    3
 
 Підтвердити підписання контракту
     [Arguments]    ${username}    ${tender_uaid}    ${contract_num}
     ${file_path}    ${file_title}    ${file_content}=    create_fake_doc
     avi.Пошук тендера по ідентифікатору    ${username}  ${tender_uaid}
-    Sleep    1
-    Wait Until Page Contains Element    xpath=(//a[contains(@name, 'winner')])
-    Натиснути    xpath=(//a[contains(@name, 'winner')])
+    Натиснути    id = bids[0].link
     Wait Until Page Contains Element    id = contract-signed-btn
     Натиснути    id = contract-signed-btn
     Натиснути    id = contract-signed-submit
@@ -841,9 +808,34 @@ Login
     [Arguments]  ${username}  ${tender_uaid}  ${award_num}  ${description}
     ${testFilePath}=    get_upload_file_path
     avi.Пошук тендера по ідентифікатору    ${username}  ${tender_uaid}
-    Wait Until Page Contains Element    id = bids[${award_num}].link
-    Натиснути    id = bids[${award_num}].link
+    Натиснути    id = bids[0].link
     Натиснути    id = disqualify-link
     Input text          id = awards-description    ${description}
     Choose File    id = files-file    ${testFilePath}
     Натиснути       id = upload-disqualification-btn
+
+Отримати інформацію про auctionParameters.dutchSteps
+    [Arguments]    @{ARGUMENTS}
+    ${return_value}=    Get text    id=auction-dutchSteps
+    [Return]    ${return_value}
+
+Отримати інформацію про contracts[-1].datePaid
+    [Arguments]    @{ARGUMENTS}
+    ${return_value}=    Get text    id='contracts-1-datePaid'
+    Log to console    ${return_value}
+    [Return]    ${return_value}
+
+Отримати інформацію про contracts[1].status
+    [Arguments]    @{ARGUMENTS}
+    ${return_value}=    Get text    id='contracts-0-status'
+    Log to console    'Статус контракта: "${return_value}"'
+    [Return]    ${return_value}
+
+Вказати дату отримання оплати
+    [Arguments]    ${username}    ${tender_uaid}    ${award_index}    ${datePaid}
+    Run keyword    avi.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+    Натиснути    id=bids[0].link
+    Log to console    ${datePaid}
+    Input text    id=contract-payment-input    ${datePaid}
+    Натиснути    id=contract-payment-submit
+    Sleep    3
