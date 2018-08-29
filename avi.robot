@@ -152,11 +152,9 @@ Login
     ${cav_id}=    Get From Dictionary    ${items[0].classification}    id
     ${quantity}=    get_quantity    ${items[0]}
     Switch Browser    ${BROWSER_ALIAS}
-    Wait Until Page Contains Element    id=cabinet    3
     Натиснути    id=cabinet
-    Wait Until Page Contains Element    id=create-auction-btn    20
     Натиснути    id=create-auction-btn
-    Wait Until Page Contains Element    id=lots-name    20
+    Wait Until Page Contains Element    id=lots-name    5
     Select From List By Value    id=lots-procurementmethodtype    ${ARGUMENTS[1].data.procurementMethodType}
     Input text    id=lots-name    ${title}
     Input text    id=lots-description    ${description}
@@ -183,7 +181,6 @@ Login
     Натиснути    id =publish-btn
     ${tender_id}=    Get Text    id = auction-id
     ${TENDER}=    Get Text    id= auction-id
-    log to console    ${TENDER}
     [Return]    ${TENDER}
 
 Додати предмет
@@ -278,13 +275,14 @@ Login
 Пошук тендера по ідентифікатору
     [Arguments]    ${username}  ${tender_uaid}
     Switch Browser    ${BROWSER_ALIAS}
-    Go to    ${USERS.users['${username}'].default_page}
-    Wait Until Page Contains Element    id = auctionssearch-main_search
+    Sleep    3
+    Натиснути    id=home-link
+    Натиснути    id = auctionssearch-main_search
     Input Text    id = auctionssearch-main_search    ${tender_uaid}
     Натиснути    id = public-search-btn
     Sleep    2
-    Wait Until Page Contains Element    id=auction-view-btn
     Натиснути    id=auction-view-btn
+    Sleep    2
 
 Отримати інформацію про cancellations[0].status
     Wait Until Page Contains Element    id = cancellation-status
@@ -319,14 +317,13 @@ Login
 
 Перейти на сторінку тендера
     [Arguments]  ${username}  ${tender_uaid}
-    ${present}=  Run Keyword And Return Status  Element Should Be Visible  id = auction-status
-    Run Keyword Unless  ${present}  avi.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+    ${present}=    Run Keyword And Return Status    Element Should Be Visible    id = auction-status
+    Run Keyword Unless    ${present}    avi.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
 
 Отримати інформацію із тендера
     [Arguments]  ${username}  ${tender_uaid}  ${fieldname}
-    Run Keyword If  '${fieldname}' == 'tenderPeriod.endDate'
-    ...  Перейти на сторінку тендера  ${username}  ${tender_uaid}
-    ${return_value}=  Run Keyword  Отримати інформацію про ${fieldname}
+    Run keyword    avi.Перейти на сторінку тендера  ${username}  ${tender_uaid}
+    ${return_value}=  Run Keyword  avi.Отримати інформацію про ${fieldname}
     [return]  ${return_value}
 
 Отримати текст із поля і показати на сторінці
@@ -527,23 +524,23 @@ Login
     ${title}=    Get From Dictionary    ${ARGUMENTS[2].data}    title
     ${description}=    Get From Dictionary    ${ARGUMENTS[2].data}    description
     avi.Пошук тендера по ідентифікатору    ${ARGUMENTS[0]}    ${ARGUMENTS[1]}
-    Wait Until Page Contains Element    id= create-question-btn
     Натиснути    id=create-question-btn
+    Sleep    1
     Input text    id=question-title    ${title}
     Input text    id=question-description    ${description}
     Натиснути    id= submit-question-btn
     ${description}=    Get From Dictionary    ${ARGUMENTS[2].data}    description
 
 Задати запитання на предмет
-  [Arguments]  ${username}  ${tender_uaid}  ${item_id}  ${question}
-  avi.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
-  Sleep    2
-  Натиснути     id = ${item_id}item
-  Sleep  3
-  Input text          id=question-title                 ${question.data.title}
-  Input text          id=question-description          ${question.data.description}
-  Натиснути     id=submit-question-btn
-  Sleep  3
+    [Arguments]  ${username}  ${tender_uaid}  ${item_id}  ${question}
+    avi.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+    Sleep    2
+    Натиснути     id = ${item_id}item
+    Sleep  3
+    Input text          id=question-title                 ${question.data.title}
+    Input text          id=question-description          ${question.data.description}
+    Натиснути     id=submit-question-btn
+    Sleep  3
 
 Отримати інформацію про questions[${index}].title
     ${index}=    inc    ${index}
@@ -672,19 +669,15 @@ Login
 
 Отримати посилання на аукціон для глядача
     [Arguments]  ${username}  ${tender_uaid}  ${lot_id}=${Empty}
-    Switch Browser  ${BROWSER_ALIAS}
-    Wait Until Keyword Succeeds   10 x   15 s   Run Keywords
-    ...   Reload Page
-    ...   AND   Element Should Be Visible   id = auction-url
+    Switch Browser    ${BROWSER_ALIAS}
+    avi.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     ${tender.data.auctionUrl}=    Get Text    id = auction-url
     [Return]    ${tender.data.auctionUrl}
 
 Отримати посилання на аукціон для учасника
     [Arguments]  ${username}  ${tender_uaid}  ${lot_id}=${Empty}
-    Switch Browser  ${BROWSER_ALIAS}
-    Wait Until Keyword Succeeds   10 x   15 s   Run Keywords
-    ...   Reload Page
-    ...   AND   Element Should Be Visible   id = auction-url
+    Switch Browser    ${BROWSER_ALIAS}
+    avi.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     ${tender.data.auctionUrl}=    Get Text    id = auction-url
     [Return]    ${tender.data.auctionUrl}
 
@@ -707,10 +700,10 @@ Login
     [Return]    ${tender_doc_number}
 
 Отримати кількість документів в ставці
-  [Arguments]  ${username}  ${tender_uaid}  ${bid_index}
-  avi.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
-  ${bid_doc_number}   Get Matching Xpath Count   xpath=(//*[@id='pnAwardList']/div[last()]/div/div[1]/div/div/div[2]/table)
-  [Return]  ${bid_doc_number}
+    [Arguments]  ${username}  ${tender_uaid}  ${bid_index}
+    avi.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+    ${bid_doc_number}   Get Matching Xpath Count   xpath=(//*[@id='pnAwardList']/div[last()]/div/div[1]/div/div/div[2]/table)
+    [Return]  ${bid_doc_number}
 
 Отримати документ
     [Arguments]    ${username}    ${tender_uaid}    ${doc_id}
@@ -782,7 +775,6 @@ Login
     [Arguments]    ${username}    ${tender_uaid}    ${contract_num}    ${filepath}
     avi.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     Натиснути    id = bids[0].link
-    Wait Until Page Contains Element    id = upload-contract-link
     Натиснути    id = upload-contract-link
     Choose File    id = files-file    ${filepath}
     Натиснути    id = upload-contract-btn
@@ -800,7 +792,6 @@ Login
     ${file_path}    ${file_title}    ${file_content}=    create_fake_doc
     avi.Пошук тендера по ідентифікатору    ${username}  ${tender_uaid}
     Натиснути    id = bids[0].link
-    Wait Until Page Contains Element    id = contract-signed-btn
     Натиснути    id = contract-signed-btn
     Натиснути    id = contract-signed-submit
 
@@ -815,27 +806,29 @@ Login
     Натиснути       id = upload-disqualification-btn
 
 Отримати інформацію про auctionParameters.dutchSteps
-    [Arguments]    @{ARGUMENTS}
     ${return_value}=    Get text    id=auction-dutchSteps
+    ${return_value}=    Convert to number    ${return_value}
     [Return]    ${return_value}
 
 Отримати інформацію про contracts[-1].datePaid
-    [Arguments]    @{ARGUMENTS}
-    ${return_value}=    Get text    id='contracts-1-datePaid'
-    Log to console    ${return_value}
+    ${return_value}=    Get text    id=contracts-1-datePaid
+    [Return]    ${return_value}
+
+Отримати інформацію про contracts[1].datePaid
+    ${return_value}=    Get text    id=contracts-0-datePaid
     [Return]    ${return_value}
 
 Отримати інформацію про contracts[1].status
-    [Arguments]    @{ARGUMENTS}
-    ${return_value}=    Get text    id='contracts-0-status'
-    Log to console    'Статус контракта: "${return_value}"'
+    ${return_value}=    Get text    id=contracts-0-status
+    [Return]    ${return_value}
+
+Отримати інформацію про contracts[0].status
+    ${return_value}=    Get text    id=contracts-0-status
     [Return]    ${return_value}
 
 Вказати дату отримання оплати
     [Arguments]    ${username}    ${tender_uaid}    ${award_index}    ${datePaid}
-    Run keyword    avi.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     Натиснути    id=bids[0].link
-    Log to console    ${datePaid}
     Input text    id=contract-payment-input    ${datePaid}
     Натиснути    id=contract-payment-submit
     Sleep    3
