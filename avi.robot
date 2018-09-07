@@ -13,11 +13,14 @@ ${locator.edit.dgfDecisionID}    id = lots-dgfdecisionid
 ${locator.edit.tenderAttempts}    id = lots-tenderattempts
 ${locator.edit.title_ru}    id = lots-name
 ${locator.edit.title_en}    id = lots-name
+${locator.edit.minimalStep.amount}    id=lots-step
+${locator.edit.guarantee.amount}    id=lots-guarantee_amount
 ${locator.title_ru}    id = auction-title
 ${locator.title_en}    id = auction-title
 ${locator.title}    id = auction-title
 ${locator.description}    id = auction-description
 ${locator.minimalStep.amount}    id = auction-minimalStep_amount
+${locator.guarantee.amount}    id = auction-guarantee_amount
 ${locator.value-amount}    id = auction_value_amount
 ${locator.value-valueAddedTaxIncluded}    id=auction-valueAddedTaxIncluded
 ${locator.value.currency}    id=value-currency
@@ -384,7 +387,16 @@ Login
     [Return]    ${return_value}
 
 Отримати інформацію про minimalStep.amount
+    Sleep    10
+    Reload page
     ${return_value}=    Отримати текст із поля і показати на сторінці    minimalStep.amount
+    ${return_value}=    Convert To Number    ${return_value.replace(' ', '').replace(',', '.')}
+    [Return]    ${return_value}
+
+Отримати інформацію про guarantee.amount
+    Sleep    10
+    Reload page
+    ${return_value}=    Отримати текст із поля і показати на сторінці    guarantee.amount
     ${return_value}=    Convert To Number    ${return_value.replace(' ', '').replace(',', '.')}
     [Return]    ${return_value}
 
@@ -393,6 +405,7 @@ Login
     ${testFilePath}=    get_upload_file_path
     avi.Пошук тендера по ідентифікатору    ${username}  ${tender_uaid}
     Натиснути    id = lot-edit-btn
+    ${field_value}=    Convert to string    ${field_value}
     Input Text    ${locator.edit.${field_name}}    ${field_value}
     Choose File    id = file-type-input    ${testFilePath}
     Натиснути    id=submit-auction-btn
