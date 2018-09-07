@@ -206,13 +206,22 @@ Login
     [Arguments]  ${username}  ${tender_uaid}  ${item}
     avi.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
     Click Element  id=lot-update-btn
-    Run Keyword And Ignore Error  Натиснути    id = btn-item-add
+    Натиснути    id = create-item-btn
+    Input text    id=items-description    ${item.description}
+    Input text    id=items-quantity    ${item.quantity}
+    Select From List By Value    id=items-unit_code    ${item.unit.code}
+    Select From List By Value    id=items-address_region    ${item.deliveryAddress.region}
+    Input text    id=items-classification_id    ${item.classification.id}
+    Input text    id=items-address_postalcode    ${item.deliveryAddress.postalCode}
+    Input text    id=items-address_locality    ${item.deliveryAddress.locality}
+    Input text    id=items-address_streetaddress    ${item.deliveryAddress.streetAddress}
+    Натиснути    id = btn-item-add
 
 Видалити предмет закупівлі
     [Arguments]  ${username}  ${tender_uaid}  ${item_id}
     avi.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
     Click Element  id=lot-update-btn
-    Run Keyword And Ignore Error  Натиснути    id = btn-item-add
+    Натиснути    id = item-${item_id}-delete
 
 Завантажити документ
     [Arguments]    @{ARGUMENTS}
