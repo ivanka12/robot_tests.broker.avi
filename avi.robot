@@ -146,6 +146,8 @@ Login
     ${budget}=    get_budget    ${ARGUMENTS[1]}
     ${step_rate}=    get_step_rate    ${ARGUMENTS[1]}
     ${currency}=    Get From Dictionary    ${ARGUMENTS[1].data.value}    currency
+    ${guarantee_amount}=    Get From Dictionary    ${ARGUMENTS[1].data.guarantee}    amount
+    ${guarantee_amount}=    Convert to string    ${guarantee_amount}
     ${valueAddedTaxIncluded}=    Get From Dictionary    ${ARGUMENTS[1].data.value}    valueAddedTaxIncluded
     ${start_day_auction}=    get_tender_dates    ${ARGUMENTS[1]}    StartDate
     ${start_time_auction}=    get_tender_dates    ${ARGUMENTS[1]}    StartTime
@@ -171,6 +173,7 @@ Login
     Input text    id=lots-auction_date    ${start_day_auction}
     Input text    id=lots-auction_time    ${start_time_auction}
     Input text    id=lots-step    ${step_rate}
+    Input text    id=lots-guarantee_amount    ${guarantee_amount}
     Input text    id = lots-delivery_time    ${dgfDecisionDate}
     Input text    id = lots-delivery_term    'test'
     Input text    id = lots-requires    'test'
