@@ -327,7 +327,7 @@ Login
 Отримати кількість предметів в тендері
     [Arguments]  ${username}  ${tender_uaid}
     avi.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
-    ${number_of_items}=  Get Matching Xpath Count  //div[@class="item"]
+    ${number_of_items}=  Get Matching Xpath Count  //tr[@class="item"]
     [return]  ${number_of_items}
 
 Перейти на сторінку тендера
