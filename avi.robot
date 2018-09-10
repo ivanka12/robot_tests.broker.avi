@@ -146,6 +146,8 @@ Login
     ${budget}=    get_budget    ${ARGUMENTS[1]}
     ${step_rate}=    get_step_rate    ${ARGUMENTS[1]}
     ${currency}=    Get From Dictionary    ${ARGUMENTS[1].data.value}    currency
+    ${guarantee_amount}=    Get From Dictionary    ${ARGUMENTS[1].data.guarantee}    amount
+    ${guarantee_amount}=    Convert to string    ${guarantee_amount}
     ${valueAddedTaxIncluded}=    Get From Dictionary    ${ARGUMENTS[1].data.value}    valueAddedTaxIncluded
     ${start_day_auction}=    get_tender_dates    ${ARGUMENTS[1]}    StartDate
     ${start_time_auction}=    get_tender_dates    ${ARGUMENTS[1]}    StartTime
@@ -171,6 +173,7 @@ Login
     Input text    id=lots-auction_date    ${start_day_auction}
     Input text    id=lots-auction_time    ${start_time_auction}
     Input text    id=lots-step    ${step_rate}
+    Input text    id=lots-guarantee_amount    ${guarantee_amount}
     Input text    id = lots-delivery_time    ${dgfDecisionDate}
     Input text    id = lots-delivery_term    'test'
     Input text    id = lots-requires    'test'
@@ -203,13 +206,22 @@ Login
     [Arguments]  ${username}  ${tender_uaid}  ${item}
     avi.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
     Click Element  id=lot-update-btn
-    Run Keyword And Ignore Error  Натиснути    id = btn-item-add
+    Натиснути    id = create-item-btn
+    Input text    id=items-description    ${item.description}
+    Input text    id=items-quantity    ${item.quantity}
+    Select From List By Value    id=items-unit_code    ${item.unit.code}
+    Select From List By Value    id=items-address_region    ${item.deliveryAddress.region}
+    Input text    id=items-classification_id    ${item.classification.id}
+    Input text    id=items-address_postalcode    ${item.deliveryAddress.postalCode}
+    Input text    id=items-address_locality    ${item.deliveryAddress.locality}
+    Input text    id=items-address_streetaddress    ${item.deliveryAddress.streetAddress}
+    Натиснути    id = btn-item-add
 
 Видалити предмет закупівлі
     [Arguments]  ${username}  ${tender_uaid}  ${item_id}
     avi.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
     Click Element  id=lot-update-btn
-    Run Keyword And Ignore Error  Натиснути    id = btn-item-add
+    Натиснути    id = item-${item_id}-delete
 
 Завантажити документ
     [Arguments]    @{ARGUMENTS}
@@ -315,7 +327,7 @@ Login
 Отримати кількість предметів в тендері
     [Arguments]  ${username}  ${tender_uaid}
     avi.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
-    ${number_of_items}=  Get Matching Xpath Count  //div[@class="item"]
+    ${number_of_items}=  Get Matching Xpath Count  //tr[@class="item"]
     [return]  ${number_of_items}
 
 Перейти на сторінку тендера
